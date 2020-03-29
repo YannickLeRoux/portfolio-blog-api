@@ -115,6 +115,10 @@ app
   .put(updatePost)
   .delete(deletePost);
 
+app.get('/', (request, response) => {
+  response.send('Looks like its running');
+});
+
 // Start server
 const port = process.env.PORT || 3002;
 app.listen(process.env.PORT || 3002, () => {
