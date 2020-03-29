@@ -88,18 +88,22 @@ const deletePost = (request, response) => {
 const updatePost = (request, response) => {
   const id = parseInt(request.params.id);
   const { title, tags, subtitle, content } = request.body;
-  const updated_at = Date(Date.now());
 
-  pool.query(
-    'UPDATE posts SET title = $1, tags = $2, subtitle = $3, content = $4 updated_at = $5 WHERE id = $6',
-    [title, tags, subtitle, content, updated_at, id],
-    (error, results) => {
-      if (error) {
-        throw error;
+  if ((!title || !tags || !subtitle, !content)) {
+    response.send('Sorry, no partial updates allowed for now!');
+  } else {
+    const updated_at = Date(Date.now());
+    pool.query(
+      'UPDATE posts SET title = $1, tags = $2, subtitle = $3, content = $4, updated_at = $5 WHERE id = $6',
+      [title, tags, subtitle, content, updated_at, id],
+      (error, results) => {
+        if (error) {
+          throw error;
+        }
+        response.status(200).send(`Post modified with ID: ${id}`);
       }
-      response.status(200).send(`Post modified with ID: ${id}`);
-    }
-  );
+    );
+  }
 };
 
 app
