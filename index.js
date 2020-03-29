@@ -17,7 +17,7 @@ app.use(helmet());
 
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 5 // 5 requests,
+  max: 20 // 20 requests,
 });
 
 app.use(limiter);
@@ -57,7 +57,7 @@ const getPost = (request, response) => {
 
 const addPost = (request, response) => {
   const { title, tags, subtitle, content } = request.body;
-  const created_at = Date(Date.now());
+  const created_at = formatDate(Date.now());
   const slug = title
     .trim()
     .toLowerCase()
@@ -92,7 +92,7 @@ const updatePost = (request, response) => {
   if ((!title || !tags || !subtitle, !content)) {
     response.send('Sorry, no partial updates allowed for now!');
   } else {
-    const updated_at = Date(Date.now());
+    const updated_at = formatDate(Date.now());
     pool.query(
       'UPDATE posts SET title = $1, tags = $2, subtitle = $3, content = $4, updated_at = $5 WHERE id = $6',
       [title, tags, subtitle, content, updated_at, id],
@@ -128,3 +128,15 @@ const port = process.env.PORT || 3002;
 app.listen(process.env.PORT || 3002, () => {
   console.log(`Server listening on port ${port}...`);
 });
+
+function formatDate(date) {
+  var d = new Date(date),
+    month = '' + (d.getMonth() + 1),
+    day = '' + d.getDate(),
+    year = d.getFullYear();
+
+  if (month.length < 2) month = '0' + month;
+  if (day.length < 2) day = '0' + day;
+
+  return [year, month, day].join('-');
+}
