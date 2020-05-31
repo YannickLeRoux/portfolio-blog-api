@@ -51,17 +51,14 @@ const getPost = (request, response) => {
     if (error) {
       throw error;
     }
-    response.status(200).json(results.rows);
+    response.status(200).json(results.rows[0]);
   });
 };
 
 const addPost = (request, response) => {
   const { title, tags, subtitle, content } = request.body;
   const created_at = formatDate(Date.now());
-  const slug = title
-    .trim()
-    .toLowerCase()
-    .replace(/\s/g, '-');
+  const slug = title.trim().toLowerCase().replace(/\s/g, '-');
 
   pool.query(
     'INSERT INTO posts (title, slug, tags, subtitle, content, created_at) VALUES ($1, $2, $3, $4, $5, $6)',
@@ -113,11 +110,7 @@ app
   // POST endpoint
   .post(addPost);
 
-app
-  .route('/posts/:id')
-  .get(getPost)
-  .put(updatePost)
-  .delete(deletePost);
+app.route('/posts/:id').get(getPost).put(updatePost).delete(deletePost);
 
 app.get('/', (request, response) => {
   response.send('Looks like its running');
